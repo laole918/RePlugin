@@ -26,7 +26,7 @@ import com.qihoo360.replugin.sample.demo1.support.LogX;
 /**
  * @author RePlugin Team
  */
-public class PluginDemoService1 extends Service {
+public class PluginDemoService2 extends Service {
 
     public static final String TAG = "demo.service";
 
@@ -34,14 +34,14 @@ public class PluginDemoService1 extends Service {
     public void onCreate() {
         super.onCreate();
 
-        LogX.logDebug(TAG, "PluginDemoService1 onCreate()");
+        LogX.logDebug(TAG, "PluginDemoService2 onCreate()");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
-        Toast.makeText(this, "PluginDemoService1.action = " + action, Toast.LENGTH_SHORT).show();
-        LogX.logDebug(TAG, "PluginDemoService1 onStartCommand()");
+        Toast.makeText(this, "PluginDemoService2.action = " + action, Toast.LENGTH_SHORT).show();
+        LogX.logDebug(TAG, "PluginDemoService2 onStartCommand()");
         return super.onStartCommand(intent, flags, startId);
     }
 
