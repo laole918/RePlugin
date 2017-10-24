@@ -34,6 +34,7 @@ package com.qihoo360.replugin.utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -250,6 +251,11 @@ public class FileUtils {
      * @throws IOException           in case deletion is unsuccessful
      */
     public static void forceDelete(final File file) throws IOException {
+
+        if (!file.exists()) {
+            return;
+        }
+
         if (file.isDirectory()) {
             deleteDirectory(file);
         } else {
@@ -424,6 +430,30 @@ public class FileUtils {
             return file.delete();
         } catch (final Exception ignored) {
             return false;
+        }
+    }
+
+    public static void copyDir(final File srcFile, final File destFile) throws IOException {
+        copyDir(srcFile, destFile, true);
+    }
+
+    public static void copyDir(final File srcFile, final File destFile,
+                               final boolean preserveFileDate) throws IOException {
+        checkFileRequirements(srcFile, destFile);
+        if (!srcFile.isDirectory()) {
+            throw new IOException("Source '" + srcFile + "' exists but is not a directory");
+        }
+        if (srcFile.getCanonicalPath().equals(destFile.getCanonicalPath())) {
+            throw new IOException("Source '" + srcFile + "' and destination '" + destFile + "' are the same");
+        }
+
+        if (destFile.exists() && destFile.canWrite() == false) {
+            throw new IOException("Destination '" + destFile + "' exists but is read-only");
+        }
+
+        File[] files = srcFile.listFiles();
+        for (File file : files) {
+            copyFile(file, new File(destFile, file.getName()), preserveFileDate);
         }
     }
 
@@ -679,5 +709,31 @@ public class FileUtils {
         } else {
             return file.length(); // will be 0 if file does not exist
         }
+    }
+
+    /**
+     * 得到文件名字（不包含扩展名）
+     * <p>
+     * 例：/sdcard/test/abc.zxy/ -> abc
+     *
+     * @param filePath
+     * @return
+     */
+    public static String getFileNameWithoutExt(String filePath) {
+        if (TextUtils.isEmpty(filePath)) {
+            return filePath;
+        }
+
+        int extensionPosition = filePath.lastIndexOf(".");
+        int filePosition = filePath.lastIndexOf(File.separator);
+        if (filePosition == -1) {
+            return (extensionPosition == -1 ? filePath : filePath.substring(0, extensionPosition));
+        }
+
+        if (extensionPosition == -1) {
+            return filePath.substring(filePosition + 1);
+        }
+
+        return (filePosition < extensionPosition ? filePath.substring(filePosition + 1, extensionPosition) : filePath.substring(filePosition + 1));
     }
 }
